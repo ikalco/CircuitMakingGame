@@ -8,4 +8,4 @@ What It Is
 
 How To Use It
 ------------
-- To try it out you can simply go to the website [ikalco.github.io/CircuitMakingGame/](https://www.ikalco.github.io/CircuitMakingGame/)
+- To try it out you can simply go to the website [ikalco.github.io/CircuitMakingGame/](https://ikalco.github.io/CircuitMakingGame/)
