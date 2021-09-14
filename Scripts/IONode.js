@@ -1,13 +1,14 @@
 class IONode {
-  #value = 0;
-  constructor(x, y, mainNode = false) {
+  constructor(x, y, mainNode = false, inputNode = false) {
+    this.value = 0;
     this.mainNode = mainNode;
+    this.inputNode = inputNode;
     this.parent = null;
     this.relX = x;
     this.relY = y;
     this.r = mainNode == false ? 10 : 20;
 
-    this.input = null;
+    //this.input = null;
   }
 
   update() {
@@ -20,10 +21,13 @@ class IONode {
     this.draw();
 
     // update value of this node
-    if (this.input != undefined) this.#value = this.input();
+    if (this.connectee != undefined) {
+      this.value = this.connectee.getValue();
+    }
   }
 
   clickedOn() {
+    if (keyIsPressed && keyCode === 16) return false;
     if (mouseIsPressed && mouseButton === LEFT) {
       // left mouse button has been clicked... somewhere
       if (dist(this.x, this.y, mouseX, mouseY) <= this.r / 2) {
@@ -37,31 +41,21 @@ class IONode {
 
   draw() {
     push();
-    fill(0)
+    fill(this.value == 1 ? color(150, 0, 0) : color(10, 10, 10))
     ellipse(this.x, this.y, this.r);
+    //shows value in text
+    //fill(255)
+    //textSize(10)
+    //text(this.value, this.x, this.y);
     pop();
   }
 
   getValue() {
-    return this.#value;
+    return this.value;
   }
 
   setValue(value) {
-    if (value == 1 || value == 0) this.#value = value;
-    else {
-      try {
-        throw new Error('Value ' + value + ' is invalid must be between ' + 0 + ' and ' + 1 + '.');
-      } catch (error) {
-        console.error('Value ' + value + ' is invalid and must be between ' + 0 + ' and ' + 1 + '.');
-      }
-    }
-  }
-}
-
-class IONodeCircuit extends IONode {
-  constructor(x, y, mainNode = false) {
-    super(x, y, mainNode = false);
-
-    // if input then can only have one input
+    if (value == 1 || value == 0) { this.value = value; }
+    else console.error('Value ' + value + ' is invalid and must be 0 or 1.');
   }
 }

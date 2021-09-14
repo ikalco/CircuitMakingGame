@@ -9,6 +9,7 @@ class Button {
       this.button.style('background: (10)');
       this.button.style('border: none');
       this.button.style('cursor: pointer');
+      this.button.style('user-select: none');
       if (func instanceof Function) this.button.mousePressed(func);
       else {
         try {
