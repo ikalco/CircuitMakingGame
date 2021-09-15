@@ -15,12 +15,14 @@ class IONodeConnectionHandler {
 
   draw() {
     this.connections.forEach(connection => {
-      arrow(connection.connectee.x, connection.connectee.y, connection.x, connection.y, 20);
+      line(connection.connectee.x, connection.connectee.y, connection.x, connection.y);
+      //arrow(connection.connectee.x, connection.connectee.y, connection.x, connection.y, 20);
     });
 
     push();
     //fill(0, 220, 0)
-    if (this.firstSelectNode != null && this.whichSelectNode == 1) arrow(this.firstSelectNode.x, this.firstSelectNode.y, mouseX,mouseY, 20, false);
+    if (this.firstSelectNode != null && this.whichSelectNode == 1) line(this.firstSelectNode.x, this.firstSelectNode.y, mouseX, mouseY);
+    //arrow(this.firstSelectNode.x, this.firstSelectNode.y, mouseX, mouseY, 20, false);
     pop();
   }
 

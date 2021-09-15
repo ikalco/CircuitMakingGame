@@ -14,6 +14,7 @@ class Circuit {
     this.color = [random(20, 235), random(20, 235), random(20, 235), 255];
 
     this.placed = false;
+    this.isMove = false;
 
     this.inputs = [];
     this.outputs = [];
@@ -45,8 +46,8 @@ class Circuit {
   }
 
   logic() {
-    if (this.name == "AND") this.outputs[0].setValue(this.inputs[0].getValue() & this.inputs[1].getValue());
-    if (this.name == "NOT") this.outputs[0].setValue(0 + !this.inputs[0].getValue());
+    if (this.name == 'AND') this.outputs[0].setValue(this.inputs[0].getValue() & this.inputs[1].getValue());
+    if (this.name == 'NOT') this.outputs[0].setValue(0 + !this.inputs[0].getValue());
   }
 
   draw() {
@@ -92,17 +93,22 @@ class Circuit {
       if (mouseIsPressed && mouseButton === LEFT) {
         if (mouseX >= this.x && mouseX <= this.x + this.width) {
           if (mouseY >= this.y && mouseY <= this.y + this.height) {
-            isMove = true;
+            if (isMove) {
+              this.isMove = true;
+              isMove = false;
+            }
           }
         }
-
+      } else {
+        this.isMove = false;
+        isMove = true;
       }
     }
     // Drag and drop occurs here
-    if (isMove == true) {
+    if (this.isMove == true) {
       this.x = mouseX - this.width / 2;
       this.y = mouseY - this.height / 2;
     }
-    isMove = false;
+    //this.isMove = false;
   }
 }

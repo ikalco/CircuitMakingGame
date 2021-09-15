@@ -1,4 +1,6 @@
 class IONode {
+  static keyReleased = false;
+
   constructor(x, y, mainNode = false, inputNode = false) {
     this.value = 0;
     this.mainNode = mainNode;
@@ -7,6 +9,7 @@ class IONode {
     this.relX = x;
     this.relY = y;
     this.r = mainNode == false ? 10 : 20;
+    this.canChangeValue = false;
 
     //this.input = null;
   }
@@ -27,13 +30,21 @@ class IONode {
   }
 
   clickedOn() {
-    if (keyIsPressed && keyCode === 16) return false;
     if (mouseIsPressed && mouseButton === LEFT) {
       // left mouse button has been clicked... somewhere
       if (dist(this.x, this.y, mouseX, mouseY) <= this.r / 2) {
         // this object has been clicked on
+        if (keyIsPressed && keyCode === 16 && this.mainNode && !this.inputNode) {
+          this.canChangeValue = true;
+          return false;
+        }
         return true;
       }
+    }
+    
+    if (this.canChangeValue) {
+      this.value = 0 + !this.value;
+      this.canChangeValue = false;
     }
 
     return false;
@@ -41,7 +52,7 @@ class IONode {
 
   draw() {
     push();
-    fill(this.value == 1 ? color(150, 0, 0) : color(10, 10, 10))
+    fill(this.value == 1 ? color(150, 0, 0) : color(10, 10, 10));
     ellipse(this.x, this.y, this.r);
     //shows value in text
     //fill(255)
@@ -55,7 +66,8 @@ class IONode {
   }
 
   setValue(value) {
-    if (value == 1 || value == 0) { this.value = value; }
-    else console.error('Value ' + value + ' is invalid and must be 0 or 1.');
+    if (value == 1 || value == 0) {
+      this.value = value;
+    } else console.error('Value ' + value + ' is invalid and must be 0 or 1.');
   }
 }
