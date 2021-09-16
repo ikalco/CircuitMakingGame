@@ -32,20 +32,18 @@ function setup() {
   textSize(48);
   textAlign(CENTER, CENTER);
 
-  createCircuitInput = new Input();
-
-  createCircuitButton = new Button("Create", CreatorCircuit.CompileCircuit)
-
   NodeConnector = new IONodeConnectionHandler();
 
   creationCircuit = new CreatorCircuit(2, 1);
 
+  createCircuitInput = new Input();
+
   Circuits = [];
-  CreatorCircuit.CreateCircuit(0);
+  //CreatorCircuit.CreateCircuit(0);
 }
 
 function draw() {
-  background(46, 46, 46);
+  background(45, 45, 45);
   creationCircuit.update();
   NodeConnector.draw();
   creationCircuit.drawIONodes();

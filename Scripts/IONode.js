@@ -45,6 +45,16 @@
         return true;
       }
     }
+    /*
+    if (mouseIsPressed) {
+      if (dist(this.x, this.y, mouseX, mouseY) <= this.r / 2) {
+        if (mouseButton === LEFT) {
+          return true;
+        } else if (mouseButton === RIGHT) {
+          return false;
+        }
+      }
+    }*/
     
     if (this.canChangeValue) {
       this.value = 0 + !this.value;

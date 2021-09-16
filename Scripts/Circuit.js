@@ -21,7 +21,7 @@ class Circuit {
     this.color = [random(20, 235), random(20, 235), random(20, 235), 255];
 
     this.placed = false;
-    this.isMove = false;
+    this.isMove = isMove;
 
     this.inputs = [];
     this.outputs = [];
