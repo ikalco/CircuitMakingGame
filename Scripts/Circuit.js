@@ -1,3 +1,10 @@
+/**
+ * @param  {} name
+ * @param  {} x
+ * @param  {} y
+ * @param  {} numOfInputs
+ * @param  {} numOfOutputs
+ */
 class Circuit {
   constructor(name, x, y, numOfInputs, numOfOutputs) {
     this.x = x;
@@ -46,8 +53,7 @@ class Circuit {
   }
 
   logic() {
-    if (this.name == 'AND') this.outputs[0].setValue(this.inputs[0].getValue() & this.inputs[1].getValue());
-    if (this.name == 'NOT') this.outputs[0].setValue(0 + !this.inputs[0].getValue());
+    return;
   }
 
   draw() {
@@ -57,6 +63,23 @@ class Circuit {
     fill(255);
     text(this.name, this.x + this.width / 2, this.y + this.height / 2 + 2.5);
     pop();
+  }
+
+  input(inputNodeIndex) {
+    return this.inputs[inputNodeIndex].getValue();
+  }
+
+  output(value, outputNodeIndex) {
+    this.outputs[outputNodeIndex].setValue(value);
+    return value;
+  }
+
+  and(a, b) {
+    return a & b;
+  }
+
+  not(a) {
+    return 0 + !a;
   }
 
   drawIONodes() {
@@ -89,8 +112,8 @@ class Circuit {
   }
 
   dragDrop() {
-    if (keyIsPressed && keyCode === 16) {
-      if (mouseIsPressed && mouseButton === LEFT) {
+    if (mouseIsPressed && mouseButton === LEFT) {
+      if (keyIsPressed && keyCode === 16) {
         if (mouseX >= this.x && mouseX <= this.x + this.width) {
           if (mouseY >= this.y && mouseY <= this.y + this.height) {
             if (isMove) {
@@ -99,10 +122,10 @@ class Circuit {
             }
           }
         }
-      } else {
-        this.isMove = false;
-        isMove = true;
       }
+    } else {
+      this.isMove = false;
+      isMove = true;
     }
     // Drag and drop occurs here
     if (this.isMove == true) {

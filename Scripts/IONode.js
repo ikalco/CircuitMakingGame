@@ -1,6 +1,10 @@
-class IONode {
-  static keyReleased = false;
-
+  /**
+   * @param  {} x
+   * @param  {} y
+   * @param  {} mainNode=false
+   * @param  {} inputNode=false
+   */
+  class IONode {
   constructor(x, y, mainNode = false, inputNode = false) {
     this.value = 0;
     this.mainNode = mainNode;
@@ -8,7 +12,7 @@ class IONode {
     this.parent = null;
     this.relX = x;
     this.relY = y;
-    this.r = mainNode == false ? 10 : 20;
+    this.r = mainNode == false ? 15 : 30;
     this.canChangeValue = false;
 
     //this.input = null;

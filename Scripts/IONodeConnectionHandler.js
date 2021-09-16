@@ -82,14 +82,19 @@ class IONodeConnectionHandler {
       second.input = first.getValue;
       second.connectee = first;
 
-      //console.log(this.connections);
-
       this.connections.push(second);
-      //console.log(this.connections);
     }
   }
 }
 
+/**
+ * @param  {} x1
+ * @param  {} y1
+ * @param  {} x2
+ * @param  {} y2
+ * @param  {} radius
+ * @param  {} arrowAtMiddle=true
+ */
 function arrow(x1, y1, x2, y2, radius, arrowAtMiddle = true) {
   line(x1, y1, x2, y2);
   let arrowX = (x1 + x2) / 2;
