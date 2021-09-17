@@ -16,18 +16,24 @@ class IONodeConnectionHandler {
   draw() {
     this.connections.forEach(connection => {
       push()
-      stroke(28, 32, 35);
+      stroke(connection.connectee.getValue() == 1 ? color(235,33,46) : color(28, 32, 35));
       strokeWeight(5);
       line(connection.connectee.x, connection.connectee.y, connection.x, connection.y);
       pop()
-      //arrow(connection.connectee.x, connection.connectee.y, connection.x, connection.y, 20);
     });
 
     push();
-    //fill(0, 220, 0)
-    stroke(28, 32, 35);
-    strokeWeight(5);
-    if (this.firstSelectNode != null && this.whichSelectNode == 1) line(this.firstSelectNode.x, this.firstSelectNode.y, mouseX, mouseY);
+    if (this.firstSelectNode != null && this.whichSelectNode == 1) {
+      stroke(this.firstSelectNode.getValue() == 1 ? color(235,33,46) : color(28, 32, 35));
+      strokeWeight(5);
+      line(this.firstSelectNode.x, this.firstSelectNode.y, mouseX, mouseY);
+
+      if (keyIsPressed && keyCode == 27) {
+        // if you press escape then stop selection
+        this.firstSelectNode = null;
+        this.whichSelectNode = 0;
+      }
+    }
     //arrow(this.firstSelectNode.x, this.firstSelectNode.y, mouseX, mouseY, 20, false);
     pop();
   }
@@ -46,22 +52,12 @@ class IONodeConnectionHandler {
     }
   }
 
-  /*
-  if (mouseIsPressed) {
-    if (NodeConnector.firstSelectNode == NodeConnector.secondSelectNode) {
-      NodeConnector.firstSelectNode = null;
-      NodeConnector.secondSelectNode = null;
-      NodeConnector.whichSelectNode = 0;
-    }
-  }
-  */
-
   connectNodesToEachother(first, second) {
     // make sure not to connect to self
     if (first == second) return;
 
-    if (!first.mainNode && !second.mainNode) 
-      if (first.parent == second.parent) 
+    if (!first.mainNode && !second.mainNode)
+      if (first.parent == second.parent)
         return;
 
     if (!first.inputNode && second.inputNode) {

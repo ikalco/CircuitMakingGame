@@ -59,10 +59,13 @@ class Circuit {
   draw() {
     push();
     fill(this.color);
+    noStroke()
     rect(this.x, this.y, this.width, this.height);
     fill(255);
     text(this.name, this.x + this.width / 2, this.y + this.height / 2 + 2.5);
     pop();
+
+    this.drawIONodes();
   }
 
   input(inputNodeIndex) {
@@ -83,8 +86,8 @@ class Circuit {
   }
 
   drawIONodes() {
-    for (let i = 0; i < this.inputs.length; i++) this.inputs[i].draw(this.x, this.y);
-    for (let i = 0; i < this.outputs.length; i++) this.outputs[i].draw(this.x, this.y);
+    for (let i = 0; i < this.inputs.length; i++) this.inputs[i].draw();
+    for (let i = 0; i < this.outputs.length; i++) this.outputs[i].draw();
   }
 
   createIONodes() {
@@ -108,7 +111,7 @@ class Circuit {
   }
 
   calculateHeight() {
-    return max(max(this.numOfInputs, this.numOfOutputs) * 10 + 25, textAscent() + 10);
+    return max(max(this.numOfInputs, this.numOfOutputs) * 30, textAscent() + 10);
   }
 
   dragDrop() {

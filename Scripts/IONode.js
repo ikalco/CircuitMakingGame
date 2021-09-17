@@ -12,20 +12,20 @@
     this.parent = null;
     this.relX = x;
     this.relY = y;
-    this.r = mainNode == false ? 15 : 30;
-    this.canChangeValue = false;
+    this.r = mainNode == false ? 20 : 30;
+
+    this.xOffset = 0;
+    this.yOffset = 0;
 
     //this.input = null;
   }
 
   update() {
-    this.x = this.relX + (this.parent != undefined ? this.parent.x : 0);
-    this.y = this.relY + (this.parent != undefined ? this.parent.y : 0);
+    this.x = this.relX + (this.parent != null ? this.parent.x : 0) + this.xOffset;
+    this.y = this.relY + (this.parent != null ? this.parent.y : 0) + this.yOffset;
 
     // if node is clicked on and is an input then start a connection
     if (this.clickedOn()) NodeConnector.handleConnectingNodes(this);
-
-    this.draw();
 
     // update value of this node
     if (this.connectee != undefined) {
@@ -35,30 +35,9 @@
 
   clickedOn() {
     if (mouseIsPressed && mouseButton === LEFT) {
-      // left mouse button has been clicked... somewhere
       if (dist(this.x, this.y, mouseX, mouseY) <= this.r / 2) {
-        // this object has been clicked on
-        if (keyIsPressed && keyCode === 16 && this.mainNode && !this.inputNode) {
-          this.canChangeValue = true;
-          return false;
-        }
         return true;
       }
-    }
-    /*
-    if (mouseIsPressed) {
-      if (dist(this.x, this.y, mouseX, mouseY) <= this.r / 2) {
-        if (mouseButton === LEFT) {
-          return true;
-        } else if (mouseButton === RIGHT) {
-          return false;
-        }
-      }
-    }*/
-    
-    if (this.canChangeValue) {
-      this.value = 0 + !this.value;
-      this.canChangeValue = false;
     }
 
     return false;
@@ -66,12 +45,10 @@
 
   draw() {
     push();
-    fill(this.value == 1 ? color(150, 0, 0) : color(10, 10, 10));
+    noStroke();
+    fill(color(0, 0, 0));
+    //if (!this.mainNode) fill(this.value == 1 ? color(235,33,46) : color(0, 0, 0));
     ellipse(this.x, this.y, this.r);
-    //shows value in text
-    //fill(255)
-    //textSize(10)
-    //text(this.value, this.x, this.y);
     pop();
   }
 
@@ -83,5 +60,56 @@
     if (value == 1 || value == 0) {
       this.value = value;
     } else console.error('Value ' + value + ' is invalid and must be 0 or 1.');
+  }
+}
+
+class NodeSwitch {
+  constructor(node) {
+    this.node = node;
+
+    if (!this.node.inputNode) this.node.xOffset = this.node.r * 2;
+    else this.node.xOffset = this.node.r * -2;
+    this.node.yOffset = 0;
+    
+    this.x = this.node.x - this.node.xOffset;
+    this.y = this.node.y - this.node.yOffset;
+    this.r = this.node.r * 1.5;
+
+    this.canChangeValue = false;
+  }
+
+  update() {
+    this.x = this.node.x - this.node.xOffset;
+    this.y = this.node.y - this.node.yOffset;
+
+    this.clickedOn();
+    this.draw();
+  }
+
+  draw() {
+    push();
+    strokeWeight(5);
+    stroke(0);
+    line(this.x, this.y, this.node.x, this.node.y);
+    noStroke();
+    fill(this.node.getValue() == 1 ? color(235,33,46) : color(29,31,41));
+    ellipse(this.x, this.y, this.r);
+    pop();
+  }
+
+  clickedOn() {
+    if (mouseIsPressed && mouseButton === LEFT) {
+      if (dist(this.x, this.y, mouseX, mouseY) <= this.r / 2) {
+        this.canChangeValue = true;
+        return true;
+      }
+    }
+
+    if (this.canChangeValue) {
+      this.node.setValue(0 + !this.node.getValue());
+      this.canChangeValue = false;
+    }
+
+    return false;
   }
 }

@@ -16,21 +16,26 @@ function mouseReleased() {
 }
 
 function keyPressed() {
-  if (keyCode == 32) {
-    // space
-    if (Circuits == undefined && Circuits == null) return;
-    CreatorCircuit.CreateCircuit(1);
+  if (keyCode >= 49 && keyCode <= 57) {
+    // any of the numbers
+    if (CreatorCircuit.savedCircuits[keyCode - 49]) CreatorCircuit.CreateCircuit(keyCode - 49);
+  }
+  if (keyCode == 13) {
+    // enter
+    CreatorCircuit.SaveCircuit();
   }
 }
 
 function keyReleased() {
   IONode.keyReleased = true;
+  if (CreatorCircuit.instance != undefined) CreatorCircuit.handleAddingRemovingNodes();
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   textSize(48);
   textAlign(CENTER, CENTER);
+  strokeCap(ROUND);
 
   NodeConnector = new IONodeConnectionHandler();
 

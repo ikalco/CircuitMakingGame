@@ -23,6 +23,7 @@ class CreatorCircuit {
 
     this.inputs = [];
     this.outputs = [];
+    this.IONodeSwitches = [];
 
     this.createIONodes();
 
@@ -44,8 +45,15 @@ class CreatorCircuit {
     this.y = windowHeight * 0.1;
     this.width = windowWidth - windowWidth * 0.1;
     this.height = windowHeight - windowHeight * 0.2;
+
     this.inputSpacing = this.height / this.numOfInputs;
     this.outputSpacing = this.height / this.numOfOutputs;
+
+    this.draw();
+
+    for (let i = 0; i < this.IONodeSwitches.length; i++) {
+      this.IONodeSwitches[i].update();
+    }
 
     for (let i = 0; i < this.inputs.length; i++) {
       this.inputs[i].relX = this.x;
@@ -58,39 +66,114 @@ class CreatorCircuit {
       this.outputs[i].relY = this.y + this.outputSpacing * i + this.height / (2 * this.numOfOutputs);
       this.outputs[i].update();
     }
+  }
 
+  draw() {
+    // draws darker piece at the bottom
     push();
     fill(30, 30, 30);
     noStroke();
     rect(0, windowHeight - this.y / 3 * 2, windowWidth, windowHeight - (windowHeight - this.y / 3 * 2));
     pop();
 
-    this.draw();
-  }
-
-  draw() {
-    // buttons are all 75
+    // draws inner part and the line between the outer and inner parts
     push();
     fill(45, 45, 45);
     strokeWeight(5);
     stroke(60, 60, 60);
-    rect(this.x, this.y, this.width, this.height);
+    rect(this.x, this.y, this.width, this.height, 5);
     pop();
   }
 
   drawIONodes() {
-    for (let i = 0; i < this.inputs.length; i++) this.inputs[i].draw(this.x, this.y);
-    for (let i = 0; i < this.outputs.length; i++) this.outputs[i].draw(this.x, this.y);
+    for (let i = 0; i < this.inputs.length; i++) this.inputs[i].draw();
+    for (let i = 0; i < this.outputs.length; i++) this.outputs[i].draw();
   }
 
   createIONodes() {
     for (let i = 0; i < this.numOfInputs; i++) {
-      let ioNode = new IONode(0, this.inputSpacing * i + this.height / (2 * this.numOfInputs), true, false);
-      this.inputs.push(ioNode);
+      let node = new IONode(0, this.inputSpacing * i + this.height / (2 * this.numOfInputs), true, false);
+      this.IONodeSwitches.push(new NodeSwitch(node));
+      this.inputs.push(node);
     }
     for (let i = 0; i < this.numOfOutputs; i++) {
-      let ioNode = new IONode(this.width, this.outputSpacing * i + this.height / (2 * this.numOfOutputs), true, true);
-      this.outputs.push(ioNode);
+      let node = new IONode(this.width, this.outputSpacing * i + this.height / (2 * this.numOfOutputs), true, true);
+      this.IONodeSwitches.push(new NodeSwitch(node));
+      this.outputs.push(node);
+    }
+  }
+
+  static handleAddingRemovingNodes() {
+    let changed = 0;
+    if (mouseX < windowWidth / 2) {
+      if (keyCode == 107) {
+        CreatorCircuit.instance.numOfInputs++;
+        let node = new IONode(0, CreatorCircuit.instance.inputSpacing * (CreatorCircuit.instance.inputs.length - 1) + CreatorCircuit.instance.height / (2 * CreatorCircuit.instance.numOfInputs), true, false);
+        CreatorCircuit.instance.IONodeSwitches.push(new NodeSwitch(node));
+        CreatorCircuit.instance.inputs.push(node)
+        changed = 1;
+      } else if (keyCode == 109) {
+        CreatorCircuit.instance.numOfInputs--;
+        changed = 2;
+      }
+    } else {
+      if (keyCode == 107) {
+        CreatorCircuit.instance.numOfOutputs++;
+        let node = new IONode(CreatorCircuit.instance.width, CreatorCircuit.instance.outputSpacing * (CreatorCircuit.instance.inputs.length - 1) + CreatorCircuit.instance.height / (2 * CreatorCircuit.instance.numOfOutputs), true, true);
+        CreatorCircuit.instance.IONodeSwitches.push(new NodeSwitch(node));
+        CreatorCircuit.instance.outputs.push(node);
+        changed = 3;
+      } else if (keyCode == 109) {
+        CreatorCircuit.instance.numOfOutputs--;
+        
+        changed = 4;
+      }
+    }
+
+    if (changed != 0) {
+      if (CreatorCircuit.instance.numOfInputs == 0) CreatorCircuit.instance.numOfInputs = 1;
+      else if (changed == 2) {
+        CreatorCircuit.instance.IONodeSwitches.forEach((nodeSwitch, index) => {
+          if(nodeSwitch.node == CreatorCircuit.instance.inputs.at(-1)) {
+            // if you are the most recent node
+
+            // delete all connections to itself
+            NodeConnector.connections.forEach((connection, index) => {
+              if(connection.connectee == nodeSwitch.node) {
+                connection.connectee = undefined;
+                NodeConnector.connections.splice(index);
+              }
+            });
+
+            CreatorCircuit.instance.IONodeSwitches.splice(index);
+          }
+        });
+
+        CreatorCircuit.instance.inputs.pop();
+      }
+      if (CreatorCircuit.instance.numOfOutputs == 0) CreatorCircuit.instance.numOfOutputs = 1;
+      else if (changed == 4) {
+        CreatorCircuit.instance.IONodeSwitches.forEach((nodeSwitch, index) => {
+          if(nodeSwitch.node == CreatorCircuit.instance.outputs.at(-1)) {
+            // if you are the most recent node
+
+            // delete all connections to itself
+            NodeConnector.connections.forEach((connection, index) => {
+              if(connection.connectee == nodeSwitch.node) {
+                connection.connectee = undefined;
+                NodeConnector.connections.splice(index);
+              }
+            });
+
+            CreatorCircuit.instance.IONodeSwitches.splice(index);
+          }
+        });
+
+        CreatorCircuit.instance.outputs.pop();
+      }
+
+      CreatorCircuit.instance.inputSpacing = CreatorCircuit.instance.height / CreatorCircuit.instance.numOfInputs;
+      CreatorCircuit.instance.outputSpacing = CreatorCircuit.instance.height / CreatorCircuit.instance.numOfOutputs;
     }
   }
 
@@ -115,14 +198,7 @@ class CreatorCircuit {
     console.time("Time to compile circuit");
     let compiledCircuit = [String(createCircuitInput.getValue()).toUpperCase(), CreatorCircuit.instance.inputs.length, CreatorCircuit.instance.outputs.length];
 
-    // work backwards
-    // start with the inputs(outputs) of the creation circuit
-    // then traceback where it gets its values
-    // when you get to a cricuit you want to
-    // loop through all it's inputs (tracing back with those)
-    // when it gets back to you then you just combine those inputs to make your function (gate)
-
-    let compiledOutputLogicStrings = compileCircuit(CreatorCircuit.instance.outputs);
+    let compiledOutputLogicStrings = compileLogicFromNodes(CreatorCircuit.instance.outputs);
 
     let compiledLogicString = "";
     for (let i = 0; i < compiledOutputLogicStrings.length; i++) {
@@ -131,10 +207,8 @@ class CreatorCircuit {
 
     compiledLogicString = compiledLogicString.replaceAll("input", "this.input");
 
-    let logicFunction = `return ${compiledLogicString}`;
-
     // saves compiled circuit
-    compiledCircuit.push(Function(logicFunction));
+    compiledCircuit.push(Function(compiledLogicString));
     CreatorCircuit.savedCircuits.push(compiledCircuit);
 
     // create new button that will make a new one of the saved circuit
@@ -145,6 +219,7 @@ class CreatorCircuit {
     Circuits = [];
     CreatorCircuit.instance.inputs = [];
     CreatorCircuit.instance.outputs = [];
+    CreatorCircuit.instance.IONodeSwitches = [];
     CreatorCircuit.instance.createIONodes();
 
     // Clearing circuit name box
@@ -161,37 +236,27 @@ class CreatorCircuit {
   }
 }
 
-function compileCircuit(arrOfNodes) {
+function compileLogicFromNodes(arrOfNodes) {
   //console.log(arrOfNodes);
   let inputs = [];
-  let bottomOfRecursion = false;
   let circuit;
 
   arrOfNodes.forEach(node => {
     if (node.parent) circuit = node.parent;
     if (node.connectee) {
-      // if the thing its connected to has a circuit as its parent
       if (node.connectee.parent) {
-        // this is what this node will recieve
-        //console.log(node.connectee.parent.inputs)
-        inputs.push(compileCircuit(node.connectee.parent.inputs));
+        inputs.push(compileLogicFromNodes(node.connectee.parent.inputs));
       } else {
-        inputs.push(compileCircuit([node.connectee]));
+        inputs.push(compileLogicFromNodes([node.connectee]));
       }
     } else {
-      //console.log(node.mainNode, !node.inputNode);
-      //console.log(node);
-      //console.log("input(" + CreatorCircuit.instance.inputs.indexOf(node) + ")")
       if ((node.mainNode, !node.inputNode)) inputs.push("input(" + CreatorCircuit.instance.inputs.indexOf(node) + ")");
     }
   });
-  // TODO need to compile our logic function to where input(n) uses this inputs function
-  // ['AND', 2, 1, function () { return this.output(this.and(this.input(0), this.input(1)), 0); }]
-  // replace all "this.input(n)" with inputs[n]
+
   if (circuit) {
     let logicString = getLogicFromFunc(circuit.logic);
     let replaced = replaceReferenceInputs(logicString, inputs);
-    //console.log(replaced)
     return replaced;
   } else {
     return inputs;
@@ -200,7 +265,6 @@ function compileCircuit(arrOfNodes) {
 
 function replaceReferenceInputs(logicString, inputs = []) {
   while (logicString.includes("this.input")) {
-    //print(logicString);
     let index = logicString.indexOf("this.input");
     let input = inputs[logicString[index + 11]];
     logicString = logicString.slice(0, index) + input + logicString.slice(index + 13, logicString.length);
