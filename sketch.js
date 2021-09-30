@@ -1,5 +1,7 @@
 let logicGatesImg;
 let isMove = false;
+let avgFps = 60;
+let a = 0.9;
 
 function mouseReleased() {
   //Mouse Released
@@ -13,6 +15,16 @@ function mouseReleased() {
       }
     }
   }
+}
+
+function drawFramerate() {
+  avgFps = a * avgFps + (1.0 - a) * getFrameRate();
+  let fpsString = 'FPS: ' + parseInt(avgFps);
+  push();
+  textSize(24);
+  fill(255);
+  text(fpsString, 50, 500);
+  pop();
 }
 
 function keyPressed() {
@@ -44,7 +56,6 @@ function setup() {
   createCircuitInput = new Input();
 
   Circuits = [];
-  //CreatorCircuit.CreateCircuit(0);
 }
 
 function draw() {
@@ -56,6 +67,8 @@ function draw() {
     Circuits[i].update();
   }
   createCircuitInput.update();
+  
+  drawFramerate();
 }
 
 function windowResized() {

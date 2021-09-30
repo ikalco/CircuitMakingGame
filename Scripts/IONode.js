@@ -1,10 +1,10 @@
-  /**
+/**
    * @param  {} x
    * @param  {} y
    * @param  {} mainNode=false
    * @param  {} inputNode=false
    */
-  class IONode {
+class IONode {
   constructor(x, y, mainNode = false, inputNode = false) {
     this.value = 0;
     this.mainNode = mainNode;
@@ -17,12 +17,15 @@
     this.xOffset = 0;
     this.yOffset = 0;
 
+    this.distFromThisToMouse = 100;
+
     //this.input = null;
   }
 
   update() {
     this.x = this.relX + (this.parent != null ? this.parent.x : 0) + this.xOffset;
     this.y = this.relY + (this.parent != null ? this.parent.y : 0) + this.yOffset;
+    this.distFromThisToMouse = dist(this.x, this.y, mouseX, mouseY);
 
     // if node is clicked on and is an input then start a connection
     if (this.clickedOn()) NodeConnector.handleConnectingNodes(this);
@@ -34,8 +37,8 @@
   }
 
   clickedOn() {
-    if (mouseIsPressed && mouseButton === LEFT) {
-      if (dist(this.x, this.y, mouseX, mouseY) <= this.r / 2) {
+    if (this.distFromThisToMouse <= this.r / 2) {
+      if (mouseIsPressed && mouseButton === LEFT) {
         return true;
       }
     }
@@ -44,12 +47,20 @@
   }
 
   draw() {
-    push();
-    noStroke();
-    fill(color(0, 0, 0));
-    //if (!this.mainNode) fill(this.value == 1 ? color(235,33,46) : color(0, 0, 0));
-    ellipse(this.x, this.y, this.r);
-    pop();
+    if (this.distFromThisToMouse <= this.r / 2) {
+      push();
+      noStroke();
+      fill(color(169, 169, 169));
+      ellipse(this.x, this.y, this.r + 2.5);
+      pop();
+    } else {
+      push();
+      noStroke();
+      fill(color(0, 0, 0));
+      //if (!this.mainNode) fill(this.value == 1 ? color(235,33,46) : color(0, 0, 0));
+      ellipse(this.x, this.y, this.r);
+      pop();
+    }
   }
 
   getValue() {
@@ -59,7 +70,7 @@
   setValue(value) {
     if (value == 1 || value == 0) {
       this.value = value;
-    } else console.error('Value ' + value + ' is invalid and must be 0 or 1.');
+    } else console.error("Value " + value + " is invalid and must be 0 or 1.");
   }
 }
 
@@ -70,7 +81,7 @@ class NodeSwitch {
     if (!this.node.inputNode) this.node.xOffset = this.node.r * 2;
     else this.node.xOffset = this.node.r * -2;
     this.node.yOffset = 0;
-    
+
     this.x = this.node.x - this.node.xOffset;
     this.y = this.node.y - this.node.yOffset;
     this.r = this.node.r * 1.5;
@@ -92,7 +103,7 @@ class NodeSwitch {
     stroke(0);
     line(this.x, this.y, this.node.x, this.node.y);
     noStroke();
-    fill(this.node.getValue() == 1 ? color(235,33,46) : color(29,31,41));
+    fill(this.node.getValue() == 1 ? color(235, 33, 46) : color(29, 31, 41));
     ellipse(this.x, this.y, this.r);
     pop();
   }

@@ -106,26 +106,38 @@ class CreatorCircuit {
   static handleAddingRemovingNodes() {
     let changed = 0;
     if (mouseX < windowWidth / 2) {
-      if (keyCode == 107) {
+      if (keyCode == 107 || keyCode == 81) {
         CreatorCircuit.instance.numOfInputs++;
-        let node = new IONode(0, CreatorCircuit.instance.inputSpacing * (CreatorCircuit.instance.inputs.length - 1) + CreatorCircuit.instance.height / (2 * CreatorCircuit.instance.numOfInputs), true, false);
+        let node = new IONode(
+          0,
+          CreatorCircuit.instance.inputSpacing * (CreatorCircuit.instance.inputs.length - 1) +
+            CreatorCircuit.instance.height / (2 * CreatorCircuit.instance.numOfInputs),
+          true,
+          false
+        );
         CreatorCircuit.instance.IONodeSwitches.push(new NodeSwitch(node));
-        CreatorCircuit.instance.inputs.push(node)
+        CreatorCircuit.instance.inputs.push(node);
         changed = 1;
-      } else if (keyCode == 109) {
+      } else if (keyCode == 109 || keyCode == 69) {
         CreatorCircuit.instance.numOfInputs--;
         changed = 2;
       }
     } else {
-      if (keyCode == 107) {
+      if (keyCode == 107 || keyCode == 81) {
         CreatorCircuit.instance.numOfOutputs++;
-        let node = new IONode(CreatorCircuit.instance.width, CreatorCircuit.instance.outputSpacing * (CreatorCircuit.instance.inputs.length - 1) + CreatorCircuit.instance.height / (2 * CreatorCircuit.instance.numOfOutputs), true, true);
+        let node = new IONode(
+          CreatorCircuit.instance.width,
+          CreatorCircuit.instance.outputSpacing * (CreatorCircuit.instance.inputs.length - 1) +
+            CreatorCircuit.instance.height / (2 * CreatorCircuit.instance.numOfOutputs),
+          true,
+          true
+        );
         CreatorCircuit.instance.IONodeSwitches.push(new NodeSwitch(node));
         CreatorCircuit.instance.outputs.push(node);
         changed = 3;
-      } else if (keyCode == 109) {
+      } else if (keyCode == 109 || keyCode == 69) {
         CreatorCircuit.instance.numOfOutputs--;
-        
+
         changed = 4;
       }
     }
@@ -134,17 +146,18 @@ class CreatorCircuit {
       if (CreatorCircuit.instance.numOfInputs == 0) CreatorCircuit.instance.numOfInputs = 1;
       else if (changed == 2) {
         CreatorCircuit.instance.IONodeSwitches.forEach((nodeSwitch, index) => {
-          if(nodeSwitch.node == CreatorCircuit.instance.inputs.at(-1)) {
+          if (nodeSwitch.node == CreatorCircuit.instance.inputs.at(-1)) {
             // if you are the most recent node
 
             // delete all connections to itself
             NodeConnector.connections.forEach((connection, index) => {
-              if(connection.connectee == nodeSwitch.node) {
+              if (connection.connectee == nodeSwitch.node) {
                 connection.connectee = undefined;
                 NodeConnector.connections.splice(index);
               }
             });
 
+            console.log(CreatorCircuit.instance.IONodeSwitches[index]);
             CreatorCircuit.instance.IONodeSwitches.splice(index);
           }
         });
@@ -154,17 +167,18 @@ class CreatorCircuit {
       if (CreatorCircuit.instance.numOfOutputs == 0) CreatorCircuit.instance.numOfOutputs = 1;
       else if (changed == 4) {
         CreatorCircuit.instance.IONodeSwitches.forEach((nodeSwitch, index) => {
-          if(nodeSwitch.node == CreatorCircuit.instance.outputs.at(-1)) {
+          if (nodeSwitch.node == CreatorCircuit.instance.outputs.at(-1)) {
             // if you are the most recent node
 
             // delete all connections to itself
             NodeConnector.connections.forEach((connection, index) => {
-              if(connection.connectee == nodeSwitch.node) {
+              if (connection.connectee == nodeSwitch.node) {
                 connection.connectee = undefined;
                 NodeConnector.connections.splice(index);
               }
             });
 
+            console.log(CreatorCircuit.instance.IONodeSwitches[index]);            
             CreatorCircuit.instance.IONodeSwitches.splice(index);
           }
         });

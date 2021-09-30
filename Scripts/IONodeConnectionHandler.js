@@ -10,6 +10,8 @@ class IONodeConnectionHandler {
 
     this.connections = [];
 
+    this.currentConnectionVerts = [];
+
     IONodeConnectionHandler.instance = this;
   }
 
@@ -21,6 +23,20 @@ class IONodeConnectionHandler {
       line(connection.connectee.x, connection.connectee.y, connection.x, connection.y);
       pop()
     });
+
+    /*
+    push();
+    noFill();
+    stroke(color(28, 32, 35));
+    strokeWeight(5);
+    beginShape();
+    for (let i = 0; i < this.currentConnectionVerts.length; i++) {
+      curveVertex(this.currentConnectionVerts[i][0], this.currentConnectionVerts[i][1]);
+    }
+    if (this.currentConnectionVerts.length < 1) curveVertex(mouseX, mouseY);
+    curveVertex(mouseX, mouseY);
+    endShape();
+    pop();*/
 
     push();
     if (this.firstSelectNode != null && this.whichSelectNode == 1) {
@@ -44,11 +60,13 @@ class IONodeConnectionHandler {
       // saves first object and sets selector to second object
       this.firstSelectNode = object;
       this.whichSelectNode = 1;
+      this.currentConnectionVerts.push([object.x, object.y])
     } else if (this.whichSelectNode == 1) {
       // saves second object and connects them
       this.secondSelectNode = object;
       this.connectNodesToEachother(this.firstSelectNode, this.secondSelectNode);
       this.whichSelectNode = 0;
+      this.currentConnectionVerts.push([object.x, object.y])      
     }
   }
 
