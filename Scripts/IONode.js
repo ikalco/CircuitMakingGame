@@ -1,9 +1,9 @@
 /**
-   * @param  {} x
-   * @param  {} y
-   * @param  {} mainNode=false
-   * @param  {} inputNode=false
-   */
+ * @param  {} x
+ * @param  {} y
+ * @param  {} mainNode=false
+ * @param  {} inputNode=false
+ */
 class IONode {
   constructor(x, y, mainNode = false, inputNode = false) {
     this.value = 0;
@@ -75,6 +75,8 @@ class IONode {
 }
 
 class NodeSwitch {
+  static CanChangeValue = false;
+
   constructor(node) {
     this.node = node;
 
@@ -109,16 +111,12 @@ class NodeSwitch {
   }
 
   clickedOn() {
-    if (mouseIsPressed && mouseButton === LEFT) {
+    if (NodeSwitch.CanChangeValue) {
       if (dist(this.x, this.y, mouseX, mouseY) <= this.r / 2) {
-        this.canChangeValue = true;
+        this.node.setValue(0 + !this.node.getValue());
+        NodeSwitch.CanChangeValue = false;
         return true;
       }
-    }
-
-    if (this.canChangeValue) {
-      this.node.setValue(0 + !this.node.getValue());
-      this.canChangeValue = false;
     }
 
     return false;

@@ -5,7 +5,7 @@ class Button {
     push();
     textSize(24);
     this.x = Button.xOffsetForNextButton;
-    this.y = windowHeight - windowHeight * 0.1 / 3 * 2;
+    this.y = windowHeight - ((windowHeight * 0.1) / 3) * 2;
     this.w = textWidth(name + 5);
     this.h = windowHeight - this.y;
 
@@ -38,7 +38,7 @@ class Button {
 }
 
 class Input {
-  constructor() {
+  constructor(id = undefined) {
     this.input = createInput();
     this.input.size(windowWidth - windowWidth * 0.1, windowHeight * 0.1 - 20);
     this.input.position(windowWidth * 0.05, 10);
@@ -50,6 +50,7 @@ class Input {
     this.input.style("text-transform:uppercase");
     this.input.style("font-size: calc((75vw - 4.5rem) / 14)");
     this.input.style("font-weight: 500");
+    if (id) this.input.id(id);
   }
 
   update() {

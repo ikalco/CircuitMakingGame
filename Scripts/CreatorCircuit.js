@@ -1,6 +1,18 @@
 class CreatorCircuit {
-  // prettier-ignore
-  static savedCircuits = [['AND', 2, 1, Function("return this.output(this.and(this.input(0), this.input(1)), 0)")], ['NOT', 1, 1, Function("return this.output(this.not(this.input(0)), 0)"),],];
+  static savedCircuits = [
+    ["AND", 2, 1, Function("this.output(this.and(this.input(0), this.input(1)), 0)")],
+    ["NOT", 1, 1, Function("this.output(this.not(this.input(0)), 0)")],
+    ["NAND", 2, 1, Function("this.output(this.not(this.and(this.input(0), this.input(1))), 0);")],
+    ["OR", 2, 1, Function("this.output(this.not(this.and(this.not(this.input(0)), this.not(this.input(1)))), 0);")],
+    [
+      "XOR",
+      2,
+      1,
+      Function(
+        "this.output(this.and(this.not(this.and(this.not(this.input(0)), this.not(this.input(1)))), this.not(this.and(this.input(0), this.input(1)))), 0);"
+      ),
+    ],
+  ];
 
   // prettier-ignore
   static creationButtons = [];
@@ -73,7 +85,7 @@ class CreatorCircuit {
     push();
     fill(30, 30, 30);
     noStroke();
-    rect(0, windowHeight - this.y / 3 * 2, windowWidth, windowHeight - (windowHeight - this.y / 3 * 2));
+    rect(0, windowHeight - (this.y / 3) * 2, windowWidth, windowHeight - (windowHeight - (this.y / 3) * 2));
     pop();
 
     // draws inner part and the line between the outer and inner parts
@@ -153,17 +165,17 @@ class CreatorCircuit {
             NodeConnector.connections.forEach((connection, index) => {
               if (connection.connectee == nodeSwitch.node) {
                 connection.connectee = undefined;
-                NodeConnector.connections.splice(index);
+                NodeConnector.connections.splice(index, 1);
               }
             });
 
-            console.log(CreatorCircuit.instance.IONodeSwitches[index]);
-            CreatorCircuit.instance.IONodeSwitches.splice(index);
+            CreatorCircuit.instance.IONodeSwitches.splice(index, 1);
           }
         });
 
         CreatorCircuit.instance.inputs.pop();
       }
+
       if (CreatorCircuit.instance.numOfOutputs == 0) CreatorCircuit.instance.numOfOutputs = 1;
       else if (changed == 4) {
         CreatorCircuit.instance.IONodeSwitches.forEach((nodeSwitch, index) => {
@@ -174,12 +186,11 @@ class CreatorCircuit {
             NodeConnector.connections.forEach((connection, index) => {
               if (connection.connectee == nodeSwitch.node) {
                 connection.connectee = undefined;
-                NodeConnector.connections.splice(index);
+                NodeConnector.connections.splice(index, 1);
               }
             });
 
-            console.log(CreatorCircuit.instance.IONodeSwitches[index]);            
-            CreatorCircuit.instance.IONodeSwitches.splice(index);
+            CreatorCircuit.instance.IONodeSwitches.splice(index, 1);
           }
         });
 
@@ -216,7 +227,7 @@ class CreatorCircuit {
 
     let compiledLogicString = "";
     for (let i = 0; i < compiledOutputLogicStrings.length; i++) {
-      compiledLogicString += `this.output(${compiledOutputLogicStrings[i]}, ${i});\n`;
+      compiledLogicString += `this.output(${compiledOutputLogicStrings[i]}, ${i});`;
     }
 
     compiledLogicString = compiledLogicString.replaceAll("input", "this.input");
@@ -255,7 +266,7 @@ function compileLogicFromNodes(arrOfNodes) {
   let inputs = [];
   let circuit;
 
-  arrOfNodes.forEach(node => {
+  arrOfNodes.forEach((node) => {
     if (node.parent) circuit = node.parent;
     if (node.connectee) {
       if (node.connectee.parent) {
@@ -287,9 +298,9 @@ function replaceReferenceInputs(logicString, inputs = []) {
 }
 
 function getAllLogicOutputs(logicString) {
-  let indiciesOfAllOutputs = [...logicString.matchAll(new RegExp("this.output", "gi"))].map(a => a.index);
+  let indiciesOfAllOutputs = [...logicString.matchAll(new RegExp("this.output", "gi"))].map((a) => a.index);
   let outputs = [];
-  indiciesOfAllOutputs.forEach(index => {
+  indiciesOfAllOutputs.forEach((index) => {
     let startCurly = -1;
     let endCurly = -1;
     let numOfCurlys = 0;
